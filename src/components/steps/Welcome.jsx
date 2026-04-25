@@ -4,9 +4,20 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Welcome({ onStart }) {
   const [ready, setReady] = useState(false);
+  const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 80);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const onMove = (e) => setMouse({
+      x: e.clientX / window.innerWidth,
+      y: e.clientY / window.innerHeight,
+    });
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
   return (
@@ -30,15 +41,16 @@ export default function Welcome({ onStart }) {
         />
       </div>
 
-      {/* Orb */}
+      {/* Orb responsivo ao mouse */}
       <div
         className="absolute pointer-events-none mix-blend-screen"
         style={{
-          width:     'clamp(300px, 50vw, 600px)',
-          height:    'clamp(300px, 50vw, 600px)',
-          top:       '50%',
-          left:      '50%',
+          width: 'clamp(300px, 50vw, 600px)',
+          height: 'clamp(300px, 50vw, 600px)',
+          left: `${mouse.x * 100}%`,
+          top: `${mouse.y * 100}%`,
           transform: 'translate(-50%, -50%)',
+          transition: 'left 0.8s ease, top 0.8s ease',
         }}
       >
         <div className="orb-container" />
@@ -46,22 +58,18 @@ export default function Welcome({ onStart }) {
 
       {/* Conteúdo */}
       <div className="relative z-10 max-w-xl mx-auto text-center">
-        {/* Badge */}
-        <motion.div
+        {/* Badge → link Numera */}
+        <motion.a
+          href="https://www.gruponumera.com"
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0, y: 16 }}
           animate={ready ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8"
-          style={{ background: 'rgba(0,191,165,0.08)', border: '1px solid rgba(0,191,165,0.18)' }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 border border-white/10 bg-white/5 backdrop-blur-md text-[#00BFA5] text-[10px] font-semibold tracking-widest uppercase no-underline transition-all duration-300 hover:bg-white/10 hover:border-[#00BFA5]/40 hover:shadow-[0_0_20px_rgba(0,191,165,0.25)] hover:-translate-y-0.5 active:scale-95"
         >
-          <div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: '#00BFA5', boxShadow: '0 0 5px rgba(0,191,165,0.8)' }}
-          />
-          <span className="text-xs font-light tracking-widest uppercase text-white/40">
-            Comparador de Transporte
-          </span>
-        </motion.div>
+          Desenvolvido por Numera
+        </motion.a>
 
         {/* Título */}
         <motion.div
